@@ -1,6 +1,9 @@
 var app = new Vue({
   el: '#root',
   data: {
+    currentContact: 0,
+    newMessage: '',
+    searchInput: '',
     contacts: [
     	{
     		name: 'Michele',
@@ -87,4 +90,45 @@ var app = new Vue({
     	},
     ]
   },
+  methods: {
+    changeCurrentContact: function(contactIndex) { //Cambio index corrente
+      this.currentContact = contactIndex;
+    },
+    send: function() { //Creo un nuovo messaggio come obj
+      let newMessageObj = {
+        date: new Date().toLocaleString('en-GB'),
+        text: this.newMessage,
+        status: 'sent'
+      };
+      let currentChat = this.contacts[this.currentContact].messages;//Seleziono array dei messages
+
+      if (this.newMessage != '') {//Se diverso da stringa vuota
+        currentChat.push(newMessageObj);//lo pusho nell'array dei messages
+      }
+
+      if (this.newMessage != '') {
+        setTimeout(function(){ //Risposta automatica
+          let botMessage = { //Creo obj per la risposta
+            date: new Date().toLocaleString('en-GB'),
+            text: 'Ok',
+            status: 'received'
+          };
+            currentChat.push(botMessage); //Pusho obj nei messages
+        }, 1000);
+      }
+
+      this.newMessage = ''; //Resetto l'input
+    },
+    search: function () {
+      this.contacts.forEach((contact) => {//Ciclo i contatti
+        let contactName = contact.name.toLowerCase();//Trasformo tutto in minuscolo
+        let searchedName = this.searchInput.toLowerCase();
+        if(contactName.includes(searchedName)) {//Cerco se searchedName è incluso tra i contatti
+          contact.visible = true;//Se si è visible
+        } else {
+          contact.visible = false;//Altrimenti no
+        }
+      });
+    },
+  }
 });

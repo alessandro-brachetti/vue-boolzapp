@@ -43,21 +43,25 @@
         <!-- SEARCH BAR -->
         <div class="search-bar">
           <div class="search-text">
-            <input type="text" name="search" value="" placeholder="Cerca o inizia una nuova chat">
+            <input v-model="searchInput" @keyup="search" type="text" name="search" value="" placeholder="Cerca o inizia una nuova chat">
           </div>
         </div>
         <!-- CONTACT LIST -->
         <div class="contact-list">
           <ul>
-            <li v-for="contact in contacts" tabindex="1">
+            <li
+              v-for="(contact, i) in contacts"
+             :class="(i == currentContact) ? 'active' :''"
+             @click="changeCurrentContact(i)"
+             v-if="contact.visible">
               <div class="list-wrapper">
                 <div class="image-box">
                   <img :src="'assets/img/avatar' + contact.avatar + '.jpg'" :alt="contact.name">
                 </div>
                 <div class="info-box">
                   <span class="contact-name">{{ contact.name }}</span>
-                  <span class="f-right">17:00</span>
-                  <p>Ultimo messaggio inviato</p>
+                  <span class="contact-time f-right" >{{ contact.messages.slice(-1)[0].date }}</span>
+                  <p>{{ contact.messages.slice(-1)[0].text }}</p>
                 </div>
               </div>
             </li>
@@ -70,11 +74,11 @@
         <div class="current-contact-nav">
           <div class="messenger">
             <div class="messenger-avatar">
-              <img src="assets/img/avatar_1.jpg" alt="">
+              <img :src="'assets/img/avatar' + contacts[currentContact].avatar + '.jpg'" alt="">
             </div>
             <div class="messenger-info">
-              <span class="contact-name">Michele</span>
-              <p>Ultimo accesso oggi alle 17:00</p>
+              <span class="contact-name">{{contacts[currentContact].name}}</span>
+              <p>Ultimo accesso {{ contacts[currentContact].messages.slice(-1)[0].date }}</p>
             </div>
           </div>
           <div class="chat-text-controls">
@@ -85,19 +89,10 @@
         </div>
         <!-- CHAT AREA -->
         <div class="chat-area">
-          <div class="message sent">
-            Hai portato a spasso il cane?
-            <span class="message-time">10/01/2020 15:30:55 <span><i class="fas fa-check-double"></i></span></span>
+          <div class="message" v-for="message in contacts[currentContact].messages" :class="message.status">
+            <span>{{ message.text }}</span>
+            <span class="message-time">{{ message.date }}<span v-if="message.status == 'sent'"><i class="fas fa-check-double"></i></span></span>
           </div>
-          <div class="message sent">
-            Ricordati di dargli da mangiare
-            <span class="message-time">10/01/2020 15:50:00 <span><i class="fas fa-check-double"></i></span></span>
-          </div>
-          <div class="message received">
-            Tutto fatto!
-            <span class="message-time">10/01/2020 16:15:22 </span>
-          </div>
-
         </div>
         <!-- NEW MESSAGE -->
         <div class="new-message">
@@ -105,7 +100,7 @@
             <i class="far fa-smile"></i>
           </div>
           <div class="text-area-box">
-            <input class="text-area" type="text" name="write" placeholder="Scrivi un messaggio">
+            <input v-model="newMessage" @keyup.enter="send" class="text-area" type="text" name="write" placeholder="Scrivi un messaggio">
           </div>
           <div class="new-message-icon-right">
             <i class="fas fa-microphone"></i>
