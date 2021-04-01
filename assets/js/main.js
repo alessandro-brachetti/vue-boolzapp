@@ -2,8 +2,11 @@ var app = new Vue({
   el: '#root',
   data: {
     currentContact: 0,
+    currentMessage: null,
     newMessage: '',
     searchInput: '',
+    open: false,
+    isShown: true,
     contacts: [
     	{
     		name: 'Michele',
@@ -129,6 +132,17 @@ var app = new Vue({
           contact.visible = false;//Altrimenti no
         }
       });
+    },
+    setIndexMessage: function(index) {
+      this.currentMessage = index;
+      return this.currentMessage;
+    },
+   removeIndexMessage: function() {
+      this.currentMessage = null;
+      return this.currentMessage;
+    },
+    deleteMessage: function(index, messageIndex) {
+      this.contacts[index].messages.splice(messageIndex, 1);
     },
   }
 });
